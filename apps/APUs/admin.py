@@ -1,8 +1,7 @@
 from django.contrib import admin
-
-# Register your models here.
 from apps.APUs.models import *
 
+"""Se registra todas las bases de datos que se podrán utilizar por parte del Admnistrador"""
 admin.site.register(TypeMoneyModel)
 admin.site.register(CountriesModel)
 admin.site.register(CitiesModel)

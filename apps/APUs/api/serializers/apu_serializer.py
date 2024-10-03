@@ -3,36 +3,38 @@ from rest_framework import serializers
 from apps.APUs.models import *
 from apps.APUs.api.serializers.supplies_serializers import *
 
+"""Los serializadores se usan para transformar las consultas en JSON, se estructuran acá"""
+
+"""Configura los detalles a mostrar en cada insumo"""
 class SuppliesDetailsSerializer(serializers.ModelSerializer):
+    """Usa las relaciones para traer información"""
     fk_id_type_supplies = serializers.StringRelatedField(source='fk_id_type_supplies.description')
     fk_id_unit = serializers.StringRelatedField(source='fk_id_unit.short_name')
     class Meta:
         model = SuppliesModel
         fields = ['description', 'fk_id_type_supplies', 'fk_id_unit']
 
+"""Configura cada uno de los insumos que se encuentran dentro de cada APU"""
 class SuppliesInAPUSerializer(serializers.ModelSerializer):
     total = serializers.SerializerMethodField()
+    
+    """Hereda la clase para mostrar los detalles de los insumos"""
     fk_id_supplies = SuppliesDetailsSerializer()
     class Meta:
         model = SuppliesInAPUModel
         fields = ['fk_id_supplies','price','cant', 'total']
-        
+    
+    """Funcion que calcula el total para cada insumo"""
     def get_total(self, obj):
         return obj.price * obj.cant
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        supplies = SuppliesModel.objects.filter(id=instance.fk_id_supplies.id)
-        if supplies.exists():
-            representation['fk_id_supplies'] = SuppliesDetailsSerializer(supplies.first()).data
-        else:
-            representation['fk_id_supplies'] = None
-        return representation
 
+"""Muestra información del usuario"""
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'last_name']
         
+"""Clase principal donde adjunta toda la información procesada anteriormente"""
 class APUSerializer(serializers.ModelSerializer):
     
     total_apu = serializers.SerializerMethodField()
@@ -43,13 +45,8 @@ class APUSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnalysisOfUnitaryPricesModel
         fields = ['id', 'description', 'fk_id_unit','total_apu', 'fk_id_user_create', 'suppliesinapumodel_set']
-        
+    """Funcion que calcula el precio total de todo el APU"""
     def get_total_apu(self, obj):
         serializer = SuppliesInAPUSerializer(obj.suppliesinapumodel_set.all(), many=True)
         return sum(item['total'] for item in serializer.data)
     
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        suppliesinapumodel_set = instance.suppliesinapumodel_set.all()
-        representation['suppliesinapumodel_set'] = SuppliesInAPUSerializer(suppliesinapumodel_set, many=True).data
-        return representation

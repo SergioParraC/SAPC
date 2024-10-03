@@ -1,18 +1,25 @@
 from django.db import models
 from apps.users.models import User
 
+"""Definición de modelos"""
+
+"""NOTA: Los siguientes modelos pertenecen a la configuracion del programa, por lo tanto no podrán modificarse por el usuario"""
+"""Tipo de moneda de cambio"""
 class TypeMoneyModel(models.Model):
 
     id = models.AutoField(primary_key = True)
     money = models.CharField('Moneda', max_length=10, blank=False)
     money_simb = models.CharField('Simbolo de moneda', max_length=2, blank=False)
-
+    
+    """La clase Meta define en el admin como se muestra la información"""
     class Meta:
         verbose_name = ('Moneda')
         verbose_name_plural = ('Monedas')
+    """La funcion __str__ Forma de mostrar la información tanto en Admin como en busquedas sencillas"""
     def __str__(self):
         return f"{self.money} - {self.money_simb}"
-    
+
+"""Paises"""    
 class CountriesModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -24,6 +31,7 @@ class CountriesModel(models.Model):
     def __str__(self):
         return f"{self.description}"
         
+"""Ciudades"""
 class CitiesModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -36,6 +44,7 @@ class CitiesModel(models.Model):
     def __str__(self):
         return f"{self.description} - {self.fk_id_countries.description}"
         
+"""Unidades de media (M, M3, Kg, Lb, etc)"""
 class UnitsModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -47,7 +56,8 @@ class UnitsModel(models.Model):
         verbose_name_plural = ('Unidades')
     def __str__(self):
         return f"{self.short_name} - {self.name}"
-    
+
+"""Tipo de proyecto (Edificio, via, puente)"""
 class TypeProyectModels(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -59,6 +69,7 @@ class TypeProyectModels(models.Model):
     def __str__(self):
         return f"{self.description}"
 
+"""Tipos de insumos (Materiales, mano de obra, herramienta, trasiego)"""
 class TypeSuppliesModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -70,6 +81,8 @@ class TypeSuppliesModel(models.Model):
     def __str__(self):
         return f"{self.description}"
 
+"""Los siguientes modelos se podrán modificar por el Usuario"""
+"""Compañias"""
 class CompamiesModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -88,6 +101,7 @@ class CompamiesModel(models.Model):
     def __str__(self):
         return f"{self.name}"
     
+"""Información referente al proyecto"""
 class ProjectsModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -117,6 +131,8 @@ class ProjectsModel(models.Model):
     def __str__(self):
         return f"{self.name} - {self.fk_id_companie.name} creado el {self.date_create.strftime('%Y-%m-%d')}"
 
+"""Almacentamiento de Analisis de Precios Unitarios, se realiza tabla diferente a la WBS para dar acceso a la busqueda
+a los usuarios de usar cualquier APU realizado por otrs usuarios"""
 class AnalysisOfUnitaryPricesModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -132,7 +148,8 @@ class AnalysisOfUnitaryPricesModel(models.Model):
     def __str__(self):
         return f"{self.description} - {self.fk_id_unit.short_name}"
     
-
+"""Estructura de Desglose del Trabajo (EDS) o WBS de las siglas en ingles. Contiene toda la estructura del trabajo
+tanto capítulos, subcapítulos y almacena los APUS que corresponden a la estructura"""
 class WorkBreakdownStructureModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -153,6 +170,7 @@ class WorkBreakdownStructureModel(models.Model):
     def __str__(self):
         return f"{self.grade} - {self.key_username_item} - {self.description}"
     
+"""Listado de todos los insumos"""
 class SuppliesModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -176,6 +194,8 @@ class SuppliesModel(models.Model):
         #else:
         return f"{self.description}"
 
+"""Claves dadas por parte del usuario a cada uno de los insumos, este será para cada Insumo
+Para cada proyecto manejará una nomenclatura para dar homogeneidad entre los usuarios que tienen acceso al proyecto"""
 class KeySupplieProjectModel(models.Model):
 
     id = models.AutoField(primary_key = True)
@@ -189,6 +209,8 @@ class KeySupplieProjectModel(models.Model):
     def __str__(self):
         return f"{self.key_user} - {self.fk_id_supplies.description}"
             
+"""Para enlazar las cantidades de cada insumo con cada APU se usara esta tabla, almacena la cantidad y el precio,
+que que puede variar dependiendo de cada proyecto"""
 class SuppliesInAPUModel(models.Model):
 
     id = models.AutoField(primary_key = True)
