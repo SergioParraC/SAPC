@@ -20,10 +20,10 @@ class SuppliesSerializer(serializers.HyperlinkedModelSerializer):
     fk_id_unit = serializers.StringRelatedField(source='fk_id_unit.short_name')
     fk_id_city = serializers.StringRelatedField(source='fk_id_city.description')
     
-    """Enlaces para acciones"""
+    """Enlaces para detalles"""
     url_detail = serializers.SerializerMethodField()
-    url_delete = serializers.SerializerMethodField()
     
+    """Fields que deben aparecer en el serializador"""
     class Meta:
         model = SuppliesModel
         fields = [
@@ -36,17 +36,11 @@ class SuppliesSerializer(serializers.HyperlinkedModelSerializer):
             'date_uplated', 
             'fk_id_user_create', 
             'fk_id_city',
-            'url_detail',
-            'url_delete'
+            'url_detail'
         ]
-        
+    
+    """Hyperlink para generar enlace de detalles del insumo y modificarlo"""
     def get_url_detail(self, obj):
-        request = self.context.get('request')
-        if request is None:
-            return None
-        return request.build_absolute_uri(f'/ppto/insumos/{obj.id}/')
-
-    def get_url_delete(self, obj):
         request = self.context.get('request')
         if request is None:
             return None

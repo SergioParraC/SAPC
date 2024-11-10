@@ -8,13 +8,15 @@ class SuppliesViewSet(viewsets.ModelViewSet):
     serializer_class = SuppliesSerializer
     queryset = SuppliesSerializer.Meta.model.objects.all()
 
+    """Modificacion de metodo de crear insumo"""
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(fk_id_user_create=request.user)  # Asigna el usuario actual
+            serializer.save(fk_id_user_create=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    """Modificacion de metodo de actualizar insumo"""
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -24,6 +26,7 @@ class SuppliesViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    """Modificacion de metodo de eliminar insumo"""
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         try:
@@ -34,7 +37,8 @@ class SuppliesViewSet(viewsets.ModelViewSet):
                 {'error': 'No se puede eliminar este insumo porque está siendo utilizado'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-            
+    
+    """Modificación del queryset para implementar de mejor manera la creación y modificacion de insumos"""
     def get_queryset(self):
         # Filtrar por ciudad o tipo de insumo
         queryset = super().get_queryset()
@@ -43,14 +47,15 @@ class SuppliesViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(fk_id_city=city)
         return queryset
 
+    """Modificacion del metodo crear"""
     def perform_create(self, serializer):
-        # Lógica adicional antes de crear
         serializer.save(fk_id_user_create=self.request.user)
 
+    """Modificacion del método actualizar"""
     def perform_update(self, serializer):
-        # Lógica adicional antes de actualizar
         serializer.save()
         
+    """Modifica el contexto, para generar URLs absolutas"""
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context['request'] = self.request
