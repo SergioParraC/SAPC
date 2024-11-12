@@ -19,12 +19,13 @@ class APUDetailsViewSet(viewsets.ModelViewSet):
         apu = self.get_object()
         if request.method == 'GET':
             supplies = SuppliesInAPUModel.objects.filter(fk_id_APU=apu)
-            serializer = SuppliesInAPUSerializer(supplies, many=True)
+            serializer = SuppliesInAPUSerializer(supplies, many=True, context=self.get_serializer_context())
             return Response(serializer.data)
+        
         elif request.method == 'POST':
             serializer = SuppliesInAPUSerializer(
                 data=request.data, 
-                context={'apu_id': apu.id}
+                context=self.get_serializer_context()
             )
             if serializer.is_valid():
                 serializer.save(fk_id_APU=apu)
@@ -40,11 +41,11 @@ class APUDetailsViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'GET':
-            serializer = SuppliesInAPUSerializer(supply)
+            serializer = SuppliesInAPUSerializer(supply, context=self.get_serializer_context())
             return Response(serializer.data)
 
         elif request.method == 'PUT':
-            serializer = SuppliesInAPUSerializer(supply, data=request.data, partial=True)
+            serializer = SuppliesInAPUSerializer(supply, data=request.data, partial=True, context=self.get_serializer_context())
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
