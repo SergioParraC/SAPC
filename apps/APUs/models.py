@@ -194,8 +194,8 @@ class SuppliesModel(models.Model):
         #else:
         return f"{self.description}"
 
-"""Claves dadas por parte del usuario a cada uno de los insumos, este será para cada Insumo
-Para cada proyecto manejará una nomenclatura para dar homogeneidad entre los usuarios que tienen acceso al proyecto"""
+"""Claves dadas por parte del usuario a cada uno de los insumos, este serqa para cada Insumo
+Para cada proyecto manejara una nomenclatura para dar homogeneidad entre los usuarios que tienen acceso al proyecto"""
 class KeySupplieProjectModel(models.Model):
 
     id = models.AutoField(primary_key = True)
